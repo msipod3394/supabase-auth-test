@@ -1,9 +1,11 @@
+import React from "react";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { Login } from "@/app/components/login";
 import type { Database } from "@/lib/database.types";
 
-// メインページ
-const Home = async () => {
+const LoginPage = async () => {
   // クッキーを使用して Supabaseクライアントを作成
   const supabase = createServerComponentClient<Database>({
     cookies,
@@ -14,11 +16,12 @@ const Home = async () => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  return (
-    <div className="text-center text-xl">
-      {session ? <div>ログイン中</div> : <div>未ログイン</div>}
-    </div>
-  );
+  // ログイン中であれば、Homeへリダイレクト
+  if (session) {
+    redirect("/");
+  }
+
+  return <Login />;
 };
 
-export default Home;
+export default LoginPage;
